@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+
+<style>
+    .calendario-semana thead th {
+        background-color: #4bb543;
+        color: #fff;
+        text-align: center;
+        vertical-align: middle;
+    }
+    .calendario-semana tbody th {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .calendario-semana td {
+        vertical-align: top;
+        font-size: 0.9rem;
+        min-width: 140px;
+    }
+    .dia-card {
+        border-left: 4px solid #4bb543;
+        background: #f8fff8;
+    }
+    .nav-tabs .nav-link.active {
+        background-color: #4bb543;
+        color: #fff;
+        border-color: #4bb543;
+    }
+    .nav-tabs .nav-link {
+        color: #2e7d32;
+        font-weight: 600;
+    }
+</style>
+
+<nav th:replace="layout/layout :: navbar"></nav>
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-success">
+            <i class="bi bi-heart-pulse"></i> Plan Nutricional
+        </h2>
+        <p class="text-muted fs-5 mb-0">
+            Arma recomendaciones personalizadas con productos frescos disponibles en Fruver Inari.
+        </p>
+    </div>
+
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i> <span th:text="${mensajeExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Formulario -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-success text-white fw-semibold">
+                    <i class="bi bi-clipboard2-pulse"></i> Datos del cliente
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/nutricion/generar}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nombre del cliente</label>
+                            <input type="text" name="nombreCliente" class="form-control"
+                                   placeholder="Ej: Maria Lopez" required
+                                   th:value="${plan != null ? plan.nombreCliente : ''}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Objetivo nutricional</label>
+                            <select name="objetivo" class="form-select" required>
+                                <optgroup label="Objetivos generales">
+                                    <option value="SALUD_GENERAL" th:selected="${plan != null and plan.objetivo eq 'SALUD_GENERAL'}">Salud general</option>
+                                    <option value="MANTENER" th:selected="${plan != null and plan.objetivo eq 'MANTENER'}">Mantener peso</option>
+                                    <option value="PERDER_PESO" th:selected="${plan != null and plan.objetivo eq 'PERDER_PESO'}">Bajar de peso</option>
+                                    <option value="GANAR_MUSCULO" th:selected="${plan != null and plan.objetivo eq 'GANAR_MUSCULO'}">Ganar musculo</option>
+                                    <option value="ENERGIA" th:selected="${plan != null and plan.objetivo eq 'ENERGIA'}">Mas energia</option>
+                                </optgroup>
+                                <optgroup label="Bienestar especifico">
+                                    <option value="DETOX" th:selected="${plan != null and plan.objetivo eq 'DETOX'}">Detox / depuracion</option>
+                                    <option value="DIGESTION" th:selected="${plan != null and plan.objetivo eq 'DIGESTION'}">Mejorar digestion</option>
+                                    <option value="INMUNIDAD" th:selected="${plan != null and plan.objetivo eq 'INMUNIDAD'}">Fortalecer inmunidad</option>
+                                    <option value="ANTIESTRES" th:selected="${plan != null and plan.objetivo eq 'ANTIESTRES'}">Reducir estres</option>
+                                    <option value="ANTIINFLAMATORIO" th:selected="${plan != null and plan.objetivo eq 'ANTIINFLAMATORIO'}">Antiinflamatorio</option>
+                                    <option value="DIABETES" th:selected="${plan != null and plan.objetivo eq 'DIABETES'}">Control de glucosa</option>
+                                </optgroup>
+                                <optgroup label="Perfiles especiales">
+                                    <option value="DEPORTISTA" th:selected="${plan != null and plan.objetivo eq 'DEPORTISTA'}">Rendimiento deportivo</option>
+                                    <option value="VEGETARIANO" th:selected="${plan != null and plan.objetivo eq 'VEGETARIANO'}">Nutricion vegetariana</option>
+                                    <option value="VEGANO" th:selected="${plan != null and plan.objetivo eq 'VEGANO'}">Nutricion vegana</option>
+                                    <option value="NINOS" th:selected="${plan != null and plan.objetivo eq 'NINOS'}">Nutricion infantil</option>
+                                    <option value="ADULTO_MAYOR" th:selected="${plan != null and plan.objetivo eq 'ADULTO_MAYOR'}">Adulto mayor</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Estilo alimenticio</label>
+                            <select name="estiloAlimentacion" class="form-select">
+                                <option value="CUALQUIERA" th:selected="${plan != null and plan.estiloAlimentacion eq 'CUALQUIERA'}">Omnivoro (todo)</option>
+                                <option value="VEGETARIANO" th:selected="${plan != null and plan.estiloAlimentacion eq 'VEGETARIANO'}">Vegetariano</option>
+                                <option value="VEGANO" th:selected="${plan != null and plan.estiloAlimentacion eq 'VEGANO'}">Vegano</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tipo de recetas</label>
+                            <select name="preferenciaRecetas" class="form-select">
+                                <option value="VARIADO" th:selected="${plan != null and plan.preferenciaRecetas eq 'VARIADO'}">Variadas (recomendado)</option>
+                                <option value="RAPIDO" th:selected="${plan != null and plan.preferenciaRecetas eq 'RAPIDO'}">Rapidas y practicas</option>
+                                <option value="GOURMET" th:selected="${plan != null and plan.preferenciaRecetas eq 'GOURMET'}">Gourmet / elaboradas</option>
+                                <option value="ECONOMICO" th:selected="${plan != null and plan.preferenciaRecetas eq 'ECONOMICO'}">Economicas</option>
+                                <option value="FAMILIAR" th:selected="${plan != null and plan.preferenciaRecetas eq 'FAMILIAR'}">Familiares / tradicionales</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Intensidad del plan</label>
+                            <select name="intensidad" class="form-select">
+                                <option value="SUAVE" th:selected="${plan != null and plan.intensidad eq 'SUAVE'}">Suave (3 comidas)</option>
+                                <option value="MODERADO" th:selected="${plan == null or plan.intensidad eq 'MODERADO'}">Moderado (3 comidas + merienda)</option>
+                                <option value="INTENSO" th:selected="${plan != null and plan.intensidad eq 'INTENSO'}">Intenso (5 momentos de comida)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nivel de actividad fisica</label>
+                            <select name="nivelActividad" class="form-select">
+                                <option value="BAJO" th:selected="${plan != null and plan.nivelActividad eq 'BAJO'}">Bajo (sedentario)</option>
+                                <option value="MODERADO" th:selected="${plan == null or plan.nivelActividad eq 'MODERADO'}">Moderado</option>
+                                <option value="ALTO" th:selected="${plan != null and plan.nivelActividad eq 'ALTO'}">Alto (ejercicio frecuente)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Restricciones (opcional)</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="restricciones" value="SIN_GLUTEN" id="r1">
+                                <label class="form-check-label" for="r1">Sin gluten</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="restricciones" value="SIN_LACTEOS" id="r2">
+                                <label class="form-check-label" for="r2">Sin lacteos</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="restricciones" value="BAJO_SODIO" id="r3">
+                                <label class="form-check-label" for="r3">Bajo sodio</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="restricciones" value="SIN_FRUTOS_SECOS" id="r4">
+                                <label class="form-check-label" for="r4">Sin frutos secos</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="restricciones" value="SIN_MARISCOS" id="r5">
+                                <label class="form-check-label" for="r5">Sin mariscos</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-magic"></i> Generar plan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultado -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 h-100"
+                 th:if="${mostrarResultado != null and mostrarResultado and plan != null}">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-success">
+                        <i class="bi bi-journal-medical"></i>
+                        Plan para <span th:text="${plan.nombreCliente}">Cliente</span>
+                    </span>
+                    <span class="badge bg-success" th:text="${plan.objetivoEtiqueta}">Objetivo</span>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted" th:text="${plan.resumen}">Resumen</p>
+                    <p class="small text-muted mb-0" th:if="${plan.restriccionesTexto != null}">
+                        <i class="bi bi-shield-check"></i>
+                        Restricciones: <span th:text="${plan.restriccionesTexto}">-</span>
+                    </p>
+
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link"
+                                    th:classappend="${tabActiva == null or tabActiva eq 'dia'} ? 'active' : ''"
+                                    id="tab-dia-btn" data-bs-toggle="tab" data-bs-target="#tab-dia"
+                                    type="button" role="tab">
+                                <i class="bi bi-sun"></i> Plan del dia
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link"
+                                    th:classappend="${tabActiva eq 'semana'} ? 'active' : ''"
+                                    id="tab-semana-btn" data-bs-toggle="tab" data-bs-target="#tab-semana"
+                                    type="button" role="tab">
+                                <i class="bi bi-calendar-week"></i> Calendario semanal
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- PESTAÑA: PLAN DEL DÍA -->
+                        <div class="tab-pane fade"
+                             th:classappend="${tabActiva == null or tabActiva eq 'dia'} ? 'show active' : ''"
+                             id="tab-dia" role="tabpanel">
+
+                            <h6 class="fw-bold text-success">
+                                <i class="bi bi-clock"></i> Distribucion del dia
+                            </h6>
+                            <div class="list-group list-group-flush mb-4">
+                                <div class="list-group-item border-0 px-0 pb-3"
+                                     th:each="comida : ${plan.comidas}">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="badge bg-success" th:text="${comida.momento}">Desayuno</span>
+                                        <strong class="text-success" th:text="${comida.tituloReceta}">Receta</strong>
+                                    </div>
+                                    <p class="mb-1 small" th:text="${comida.descripcion}">Descripcion</p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-basket"></i>
+                                        Ingredientes del inventario: <span th:text="${comida.productos}">Productos</span>
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning py-2">
+                                <i class="bi bi-lightbulb"></i>
+                                <span th:text="${plan.consejos}">Consejos</span>
+                            </div>
+                        </div>
+
+                        <!-- PESTAÑA: CALENDARIO SEMANAL -->
+                        <div class="tab-pane fade"
+                             th:classappend="${tabActiva eq 'semana'} ? 'show active' : ''"
+                             id="tab-semana" role="tabpanel">
+
+                            <p class="text-muted small mb-3">
+                                <i class="bi bi-calendar3"></i>
+                                Menu semanal para <strong th:text="${plan.nombreCliente}">Cliente</strong>
+                                — desayuno, almuerzo y cena con productos del inventario.
+                            </p>
+
+                            <div class="table-responsive d-none d-lg-block">
+                                <table class="table table-bordered calendario-semana shadow-sm">
+                                    <thead>
+                                    <tr>
+                                        <th>Dia</th>
+                                        <th><i class="bi bi-brightness-alt-high"></i> Desayuno</th>
+                                        <th><i class="bi bi-sun"></i> Almuerzo</th>
+                                        <th><i class="bi bi-moon"></i> Cena</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="diaPlan : ${plan.semana}">
+                                        <th th:text="${diaPlan.dia}">Lunes</th>
+                                        <td>
+                                            <strong class="d-block text-success small" th:text="${diaPlan.desayunoTitulo}">Titulo</strong>
+                                            <span th:text="${diaPlan.desayuno}">Desayuno</span>
+                                        </td>
+                                        <td>
+                                            <strong class="d-block text-success small" th:text="${diaPlan.almuerzoTitulo}">Titulo</strong>
+                                            <span th:text="${diaPlan.almuerzo}">Almuerzo</span>
+                                        </td>
+                                        <td>
+                                            <strong class="d-block text-success small" th:text="${diaPlan.cenaTitulo}">Titulo</strong>
+                                            <span th:text="${diaPlan.cena}">Cena</span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="d-lg-none">
+                                <div class="card mb-3 dia-card" th:each="diaPlan : ${plan.semana}">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold text-success mb-3" th:text="${diaPlan.dia}">Lunes</h6>
+                                        <p class="mb-2">
+                                            <span class="badge bg-warning text-dark">Desayuno</span>
+                                            <strong class="d-block small text-success" th:text="${diaPlan.desayunoTitulo}">Titulo</strong>
+                                            <span class="small" th:text="${diaPlan.desayuno}">...</span>
+                                        </p>
+                                        <p class="mb-2">
+                                            <span class="badge bg-success">Almuerzo</span>
+                                            <strong class="d-block small text-success" th:text="${diaPlan.almuerzoTitulo}">Titulo</strong>
+                                            <span class="small" th:text="${diaPlan.almuerzo}">...</span>
+                                        </p>
+                                        <p class="mb-0">
+                                            <span class="badge bg-primary">Cena</span>
+                                            <strong class="d-block small text-success" th:text="${diaPlan.cenaTitulo}">Titulo</strong>
+                                            <span class="small" th:text="${diaPlan.cena}">...</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold text-success mt-4">
+                        <i class="bi bi-box-seam"></i> Productos del inventario sugeridos
+                    </h6>
+                    <div class="row g-2 mb-3"
+                         th:if="${not #lists.isEmpty(plan.productosRecomendados)}">
+                        <div class="col-md-6" th:each="p : ${plan.productosRecomendados}">
+                            <div class="border rounded p-2 bg-light">
+                                <strong th:text="${p.nombre}">Producto</strong>
+                                <div class="small text-muted">
+                                    Stock: <span th:text="${p.cantidad}">0</span>
+                                    · $<span th:text="${#numbers.formatDecimal(p.precio, 1, 'POINT', 0, 'COMMA')}">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p th:if="${#lists.isEmpty(plan.productosRecomendados)}" class="text-muted small">
+                        No hay productos activos con stock. Registra productos en inventario para recomendaciones concretas.
+                    </p>
+
+                    <form th:action="@{/nutricion/guardar}" method="post" class="mt-3">
+                        <input type="hidden" name="nombreCliente" th:value="${plan.nombreCliente}">
+                        <input type="hidden" name="objetivo" th:value="${plan.objetivo}">
+                        <input type="hidden" name="nivelActividad" th:value="${plan.nivelActividad}">
+                        <input type="hidden" name="estiloAlimentacion" th:value="${plan.estiloAlimentacion}">
+                        <input type="hidden" name="preferenciaRecetas" th:value="${plan.preferenciaRecetas}">
+                        <input type="hidden" name="intensidad" th:value="${plan.intensidad}">
+                        <button type="submit" class="btn btn-outline-success">
+                            <i class="bi bi-save"></i> Guardar plan (dia + semana)
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 h-100"
+                 th:unless="${mostrarResultado != null and mostrarResultado and plan != null}">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center text-muted py-5">
+                    <i class="bi bi-apple display-1 text-success opacity-50"></i>
+                    <p class="mt-3 mb-0 fs-5">Completa el formulario y genera un plan</p>
+                    <p class="small">Las sugerencias usan frutas y verduras disponibles en tu inventario.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historial reciente -->
+    <div class="mt-5" th:if="${planesRecientes != null and not #lists.isEmpty(planesRecientes)}">
+        <h4 class="fw-bold text-success mb-3">
+            <i class="bi bi-archive"></i> Planes entregados recientemente
+        </h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered align-middle shadow-sm">
+                <thead class="table-success text-center">
+                <tr>
+                    <th>Cliente</th>
+                    <th>Objetivo</th>
+                    <th>Actividad</th>
+                    <th>Productos sugeridos</th>
+                    <th>Fecha</th>
+                    <th>Atendido por</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="pl : ${planesRecientes}">
+                    <td th:text="${pl.nombreCliente}">Cliente</td>
+                    <td th:text="${pl.objetivo}">Objetivo</td>
+                    <td th:text="${pl.nivelActividad}">Actividad</td>
+                    <td class="small" th:text="${pl.productosSugeridos}">Productos</td>
+                    <td class="text-center"
+                        th:text="${#temporals.format(pl.fechaCreacion, 'dd/MM/yyyy HH:mm')}">Fecha</td>
+                    <td class="text-center" th:text="${pl.registradoPor}">Usuario</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

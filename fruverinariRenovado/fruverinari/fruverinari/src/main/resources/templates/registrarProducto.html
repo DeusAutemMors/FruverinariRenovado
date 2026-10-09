@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/layout :: head}"></head>
+<body>
+
+<!-- Barra de navegación -->
+<nav th:replace="~{layout/layout :: navbar}"></nav>
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Registrar Nuevo Producto</h4>
+                </div>
+                <div class="card-body">
+
+                    <!-- 🔑 CORRECCIÓN: th:action apunta al método POST /productos/guardar -->
+                    <form th:action="@{/productos/guardar}" th:object="${producto}" method="post">
+
+                        <!-- Si es edición, necesitamos el ID (oculto) -->
+                        <input type="hidden" th:field="*{id}">
+
+                        <!-- 1. Nombre del Producto -->
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre del Producto <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{nombre}" id="nombre" class="form-control" placeholder="Ej: Tomate Chonto" required>
+                        </div>
+
+                        <!-- 2. Descripción -->
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea th:field="*{descripcion}" id="descripcion" class="form-control" rows="3" placeholder="Descripción breve del producto..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <!-- 3. Precio -->
+                            <div class="col-md-6 mb-3">
+                                <label for="precio" class="form-label">Precio de Venta ($) <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{precio}" id="precio" class="form-control" step="0.01" placeholder="Ej: 3500.00" required>
+                            </div>
+
+                            <!-- 4. Unidad de Medida -->
+                            <div class="col-md-6 mb-3">
+                                <label for="unidadMedida" class="form-label">Unidad de Medida <span class="text-danger">*</span></label>
+                                <select th:field="*{unidadMedida}" id="unidadMedida" class="form-select" required>
+                                    <option value="">-- Seleccione --</option>
+                                    <option value="kg">Kilogramos (kg)</option>
+                                    <option value="unidad">Unidad</option>
+                                    <option value="bulto">Bulto</option>
+                                    <option value="docena">Docena</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- 5. Cantidad Inicial (Stock) -->
+                            <div class="col-md-6 mb-3">
+                                <label for="cantidad" class="form-label">Cantidad Inicial (Stock) <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{cantidad}" id="cantidad" class="form-control" min="0" required>
+                            </div>
+
+                            <!-- 6. Stock Mínimo (Alerta) -->
+                            <div class="col-md-6 mb-3">
+                                <label for="stockMinimo" class="form-label">Stock Mínimo (Alerta) <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{stockMinimo}" id="stockMinimo" class="form-control" min="1" required>
+                                <div class="form-text">Se generará una alerta si el stock es igual o menor a este valor.</div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-end pt-3">
+                            <a th:href="@{/productos}" class="btn btn-secondary me-2">Cancelar</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-save"></i> Guardar Producto
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pie de página -->
+<footer th:replace="~{layout/layout :: footer}"></footer>
+
+</body>
+</html>

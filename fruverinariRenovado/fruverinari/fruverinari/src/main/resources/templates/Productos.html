@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+
+<nav th:replace="layout/layout :: navbar"></nav>
+
+<div class="container py-5">
+    <h2 class="fw-bold mb-4 text-success">
+        <i class="bi bi-box-seam"></i> Lista de Productos
+    </h2>
+
+    <form th:action="@{/productos}" method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   name="query"
+                   th:value="${query}"
+                   placeholder="Buscar por nombre o descripción...">
+
+            <button class="btn btn-success" type="submit">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+
+            <a th:href="@{/productos}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle"></i> Limpiar
+            </a>
+        </div>
+    </form>
+    <div class="mb-3 text-end">
+        <a th:href="@{/productos/registrar}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Registrar nuevo producto
+        </a>
+    </div>
+
+    <table class="table table-striped table-bordered align-middle shadow-sm">
+        <thead class="table-success text-center">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Stock Mínimo</th>
+            <th>Precio</th>
+            <th>Fecha Ingreso</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+
+        <tbody class="text-center">
+        <tr th:each="producto : ${productos}"
+            th:classappend="${producto.cantidad <= producto.stockMinimo} ? 'table-danger fw-bold' : ''">
+
+            <td th:text="${producto.id}"></td>
+            <td th:text="${producto.nombre}"></td>
+            <td th:text="${producto.descripcion}"></td>
+
+            <td th:text="${producto.cantidad}"
+                th:classappend="${producto.cantidad <= producto.stockMinimo} ? 'text-danger fw-bolder' : ''">
+            </td>
+
+            <td th:text="${producto.stockMinimo}">5</td>
+
+            <td th:text="${#numbers.formatDecimal(producto.precio, 1, 'POINT', 2, 'COMMA')}"></td>
+            <td th:text="${#temporals.format(producto.fechaIngreso, 'dd/MM/yyyy HH:mm')}"></td>
+
+            <td>
+                <span th:text="${producto.activo ? 'Activo' : 'Suspendido'}"
+                      th:classappend="${producto.activo} ? 'badge bg-success' : 'badge bg-danger'"></span>
+            </td>
+
+            <td>
+                <a th:href="@{'/productos/editar/' + ${producto.id}}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+
+                <form th:action="@{'/productos/suspender/' + ${producto.id}}" method="post" class="d-inline">
+                    <button type="submit"
+                            th:classappend="${producto.activo} ? 'btn-outline-danger' : 'btn-outline-success'"
+                            class="btn btn-sm">
+                        <i th:classappend="${producto.activo} ? 'bi bi-x-circle' : 'bi bi-check-circle'"></i>
+                        <span th:text="${producto.activo ? 'Suspender' : 'Activar'}"></span>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer th:replace="layout/layout :: footer"></footer>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+</body>
+</html>

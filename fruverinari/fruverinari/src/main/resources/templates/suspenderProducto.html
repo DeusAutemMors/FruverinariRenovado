@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/layout :: head}"></head>
+<body>
+
+<!-- Barra de navegación -->
+<nav th:replace="~{layout/layout :: navbar}"></nav>
+
+<!-- Formulario para suspender producto -->
+<div class="container mt-5">
+  <h1 class="mb-3">Suspender Producto</h1>
+  <form th:action="@{/productos/{id}/suspender(id=${producto.id})}" method="post">
+    <div class="form-group">
+      <label for="idProducto">ID del Producto</label>
+      <input type="text" class="form-control" id="idProducto" name="idProducto" th:value="${producto.id}" readonly placeholder="ID del producto" required>
+    </div>
+    <button type="submit" class="btn btn-danger">Suspender Producto</button>
+  </form>
+</div>
+
+<!-- Pie de página -->
+<footer th:replace="~{layout/layout :: footer}"></footer>
+
+</body>
+</html>

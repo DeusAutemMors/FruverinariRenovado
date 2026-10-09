@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/layout :: head}"></head>
+<body>
+
+<!-- Barra de navegación -->
+<nav th:replace="~{layout/layout :: navbar}"></nav>
+
+<!-- Formulario para suspender proveedor -->
+<div class="container mt-5">
+  <h1 class="mb-3">Suspender Proveedor</h1>
+  <form th:action="@{/proveedores/{id}/suspender(id=${proveedor.id})}" method="post">
+    <div class="form-group">
+      <label for="idProveedor">ID del Proveedor</label>
+      <input type="text" class="form-control" id="idProveedor" name="idProveedor" th:value="${proveedor.id}" readonly placeholder="ID del proveedor">
+    </div>
+    <button type="submit" class="btn btn-danger">Suspender Proveedor</button>
+  </form>
+</div>
+
+<!-- Pie de página -->
+<footer th:replace="~{layout/layout :: footer}"></footer>
+
+</body>
+</html>

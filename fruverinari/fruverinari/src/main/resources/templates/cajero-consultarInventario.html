@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+
+<nav th:replace="layout/layout :: navbar"></nav>
+
+<div class="container py-5">
+    <h2>Inventario de Productos</h2>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Stock</th>
+            <th>Precio</th>
+            <th>Activo</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${productos}">
+            <td th:text="${p.id}"></td>  <td th:text="${p.nombre}"></td>
+            <td th:text="${p.cantidad}"></td>
+            <td th:text="${p.precio}"></td>
+            <td th:text="${p.activo ? 'Sí' : 'No'}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

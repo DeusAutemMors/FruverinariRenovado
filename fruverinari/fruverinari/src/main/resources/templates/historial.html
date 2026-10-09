@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+
+<!-- 🔹 Navbar -->
+<nav th:replace="layout/layout :: navbar"></nav>
+
+<div class="container py-5">
+    <h2 class="fw-bold mb-4 text-success">
+        <i class="bi bi-clock-history"></i> Historial del Sistema
+    </h2>
+
+    <table class="table table-striped table-bordered align-middle shadow-sm">
+        <thead class="table-success text-center">
+        <tr>
+            <th>ID</th>
+            <th>Entidad</th>
+            <th>Entidad ID</th>
+            <th>Acción</th>
+            <th>Descripción</th>
+            <th>Usuario</th>
+            <th>Fecha</th>
+        </tr>
+        </thead>
+
+        <tbody class="text-center">
+        <tr th:each="h : ${historiales}">
+            <td th:text="${h.idHistorial}"></td>
+            <td th:text="${h.entidad}"></td>
+            <td th:text="${h.entidadId}"></td>
+
+            <td>
+                <span th:text="${h.accion}"
+                      th:classappend="
+                        ${h.accion == 'CREAR'} ? 'badge bg-success' :
+                        (${h.accion == 'EDITAR'} ? 'badge bg-primary' :
+                        (${h.accion == 'SUSPENDER'} ? 'badge bg-danger' : 'badge bg-secondary'))
+                      ">
+                </span>
+            </td>
+
+            <td th:text="${h.descripcion}"></td>
+            <td th:text="${h.usuario}"></td>
+
+            <!-- 🔹 FECHA (funciona con LocalDateTime) -->
+            <td th:text="${#temporals.format(h.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- 🔹 Footer -->
+<footer th:replace="layout/layout :: footer"></footer>
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+<nav th:replace="layout/layout :: navbar"></nav>
+
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-success"><i class="bi bi-stars"></i> Productos recomendados</h2>
+        <p class="text-muted">
+            Priorizamos lo que menos se vende para rotar inventario fresco. Cada compra te suma puntos.
+        </p>
+    </div>
+
+    <div th:if="${mensajeExito}" class="alert alert-success" th:text="${mensajeExito}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-4" th:each="item : ${recomendados}">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title" th:text="${item.producto.nombre}">Producto</h5>
+                    <p class="text-muted mb-1" th:text="${item.producto.descripcion}">Descripcion</p>
+                    <p class="fw-semibold text-success mb-1"
+                       th:text="'$' + ${item.producto.precio} + ' / ' + (${item.producto.unidadMedida} ?: 'ud')">$0</p>
+                    <p class="small mb-2">
+                        Vendidas: <span th:text="${item.unidadesVendidas}">0</span> |
+                        Stock: <span th:text="${item.producto.cantidad}">0</span>
+                    </p>
+                    <p class="small text-muted" th:text="${item.motivo}">Motivo</p>
+                    <form class="mt-auto" th:action="@{/cliente/comprar}" method="post">
+                        <input type="hidden" name="productoId" th:value="${item.producto.id}">
+                        <input type="hidden" name="volver" value="/cliente/recomendados">
+                        <div class="input-group">
+                            <input type="number" name="cantidad" class="form-control" min="1"
+                                   th:max="${item.producto.cantidad}" value="1" required>
+                            <button class="btn btn-success" type="submit">Comprar y sumar puntos</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 text-center text-muted" th:if="${recomendados == null or recomendados.isEmpty()}">
+            No hay productos activos con stock para recomendar. El administrador debe cargar inventario.
+        </div>
+    </div>
+</div>
+
+<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

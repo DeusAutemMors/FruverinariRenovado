@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+<nav th:replace="layout/layout :: navbar"></nav>
+
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-success"><i class="bi bi-journal-richtext"></i> Menu de recetas</h2>
+        <p class="text-muted">Todas las recetas del fruver, agrupadas por momento del dia.</p>
+    </div>
+
+    <form class="d-flex justify-content-center gap-2 mb-4" th:action="@{/cliente}" method="get">
+        <select name="momento" class="form-select w-auto" onchange="this.form.submit()">
+            <option value="TODAS" th:selected="${momentoSeleccionado == 'TODAS'}">Todas</option>
+            <option value="DESAYUNO" th:selected="${momentoSeleccionado == 'DESAYUNO'}">Desayuno</option>
+            <option value="ALMUERZO" th:selected="${momentoSeleccionado == 'ALMUERZO'}">Almuerzo</option>
+            <option value="CENA" th:selected="${momentoSeleccionado == 'CENA'}">Cena</option>
+            <option value="MERIENDA" th:selected="${momentoSeleccionado == 'MERIENDA'}">Merienda</option>
+        </select>
+    </form>
+
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-4" th:each="receta : ${recetas}">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <span class="badge bg-success mb-2" th:text="${receta.momento}">DESAYUNO</span>
+                    <span class="badge text-bg-light text-success" th:if="${receta.requiereCoccion}">Con coccion</span>
+                    <span class="badge text-bg-light" th:unless="${receta.requiereCoccion}">Sin coccion</span>
+                    <h5 class="card-title mt-2" th:text="${receta.titulo}">Titulo</h5>
+                    <p class="card-text text-muted" th:text="${receta.descripcion}">Descripcion</p>
+                    <small class="text-success" th:text="'Estilos: ' + ${receta.estilos}">Estilos</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 text-center text-muted" th:if="${recetas == null or recetas.isEmpty()}">
+            No hay recetas para este filtro.
+        </div>
+    </div>
+</div>
+
+<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

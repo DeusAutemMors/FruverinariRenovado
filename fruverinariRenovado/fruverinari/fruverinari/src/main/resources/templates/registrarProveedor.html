@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/layout :: head}"></head>
+<body>
+
+<!-- Barra de navegación -->
+<nav th:replace="~{layout/layout :: navbar}"></nav>
+
+<!-- Formulario para registrar proveedor -->
+<div class="container mt-5">
+    <h1 class="mb-4 text-success">Registrar Proveedor</h1>
+
+    <form th:action="@{/proveedores/registrar}" th:object="${proveedor}" method="post" class="shadow p-4 rounded bg-light">
+
+
+    <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre del Proveedor</label>
+            <input type="text" class="form-control" id="nombre" th:field="*{nombre}" placeholder="Ej: Distribuidora Central" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <input type="text" class="form-control" id="telefono" th:field="*{telefono}" placeholder="Ej: 3001234567" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="correo" class="form-label">Correo electrónico</label>
+            <input type="email" class="form-control" id="correo" th:field="*{correo}" placeholder="Ej: contacto@proveedor.com" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="direccion" class="form-label">Dirección</label>
+            <input type="text" class="form-control" id="direccion" th:field="*{direccion}" placeholder="Ej: Calle 123 #45-67" required>
+        </div>
+
+        <div class="text-end">
+            <a th:href="@{/proveedores}" class="btn btn-outline-secondary me-2">Cancelar</a>
+            <button type="submit" class="btn btn-success">Guardar Proveedor</button>
+        </div>
+    </form>
+</div>
+
+<!-- Pie de página -->
+<footer th:replace="~{layout/layout :: footer}"></footer>
+
+</body>
+</html>

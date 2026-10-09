@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/layout :: head}"></head>
+
+<body>
+<nav th:replace="~{layout/layout :: navbar}"></nav>
+
+<div class="container py-5">
+
+    <h2 class="mb-4 text-warning">
+        <i class="bi bi-exclamation-triangle-fill"></i> Alertas de Bajo Inventario
+        <span th:if="${alertas.empty}" class="text-success">(Todo en orden)</span>
+        <span th:if="${!alertas.empty}" class="text-danger">(<span th:text="${alertas.size()}">0</span> Productos Críticos)</span>
+    </h2>
+
+    <hr/>
+
+    <table th:if="${!alertas.empty}" class="table table-bordered table-striped table-hover">
+        <thead class="table-warning">
+        <tr>
+            <th>ID</th>
+            <th>Nombre del Producto</th>
+            <th>Stock Actual</th>
+            <th>Stock Mínimo Requerido</th>
+            <th>Acción Requerida</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="producto : ${alertas}" class="table-danger">
+            <td th:text="${producto.id}">1</td>
+            <td th:text="${producto.nombre}">Producto Ejemplo</td>
+            <td th:text="${producto.cantidad}">5</td>
+            <td th:text="${producto.stockMinimo}">10</td>
+            <td>
+                <a th:href="@{/productos/editar/} + ${producto.id}" class="btn btn-sm btn-info">
+                    <i class="bi bi-pencil-square"></i> Reabastecer
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${alertas.empty}" class="alert alert-success mt-4">
+        No hay productos que hayan alcanzado su nivel mínimo de stock.
+    </div>
+
+    <a th:href="@{/productos}" class="btn btn-success mt-3">Volver a la Gestión de Productos</a>
+</div>
+
+<footer th:replace="~{layout/layout :: footer}"></footer>
+</body>
+</html>

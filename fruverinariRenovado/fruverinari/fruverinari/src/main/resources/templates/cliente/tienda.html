@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+<nav th:replace="layout/layout :: navbar"></nav>
+
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-success"><i class="bi bi-basket"></i> Comprar</h2>
+        <p class="text-muted">Ganas 1 punto por cada $1.000 de compra (minimo 1 punto). Los descuentos canjeados se aplican aqui.</p>
+    </div>
+
+    <div th:if="${cliente != null and cliente.descuentoPendiente > 0}" class="alert alert-info">
+        Tienes un <strong th:text="${cliente.descuentoPendiente}">10</strong>% de descuento para tu proxima compra.
+    </div>
+    <div th:if="${mensajeExito}" class="alert alert-success" th:text="${mensajeExito}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead class="table-success">
+            <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Cantidad</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${productos}">
+                <td>
+                    <strong th:text="${p.nombre}">Nombre</strong>
+                    <div class="small text-muted" th:text="${p.descripcion}"></div>
+                </td>
+                <td th:text="'$' + ${p.precio}">$0</td>
+                <td th:text="${p.cantidad}">0</td>
+                <td>
+                    <form class="d-flex gap-2" th:action="@{/cliente/comprar}" method="post">
+                        <input type="hidden" name="productoId" th:value="${p.id}">
+                        <input type="hidden" name="volver" value="/cliente/tienda">
+                        <input type="number" name="cantidad" class="form-control form-control-sm" style="max-width: 90px"
+                               min="1" th:max="${p.cantidad}" value="1" required>
+                        <button class="btn btn-sm btn-success">Comprar</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${productos == null or productos.isEmpty()}">
+                <td colspan="4" class="text-center text-muted">No hay productos disponibles.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

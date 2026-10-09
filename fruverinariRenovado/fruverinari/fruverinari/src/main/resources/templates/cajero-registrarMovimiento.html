@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+
+<nav th:replace="layout/layout :: navbar"></nav>
+
+<div class="container py-5">
+
+    <h2 class="fw-bold mb-4 text-success">
+        <i class="bi bi-cash-coin"></i> Registrar Movimiento
+    </h2>
+
+    <form method="post" action="/movimientos/guardar">
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="fw-bold">Tipo de Movimiento</label>
+                <select class="form-select" name="tipoMovimiento">
+                    <option value="Entrada">Entrada</option>
+                    <option value="Salida">Salida</option>
+                    <option value="Ajuste">Ajuste de Inventario</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="fw-bold">Producto</label>
+                <select class="form-select" name="productoId" required>
+
+                    <option value="" disabled selected>Seleccione un producto</option>
+
+                    <option th:each="p : ${productosDisponibles}"
+                            th:value="${p.id}"
+                            th:text="${p.nombre}">
+                    </option>
+
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="fw-bold">Cantidad</label>
+                <input type="number" class="form-control" name="cantidad" required>
+            </div>
+
+            <div class="col-md-4">
+                <label class="fw-bold">Monto Total</label>
+                <!-- YA NO ES READONLY -->
+                <input type="number" class="form-control" name="monto" step="0.01" value="0">
+            </div>
+
+            <div class="col-md-4">
+                <label class="fw-bold">Fecha</label>
+                <input type="date" class="form-control" name="fecha">
+            </div>
+        </div>
+
+        <div class="text-end mt-3">
+            <button class="btn btn-success">
+                <i class="bi bi-check2-circle"></i> Guardar Movimiento
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<footer th:replace="layout/layout :: footer"></footer>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+</body>
+</html>
